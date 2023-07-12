@@ -1,6 +1,6 @@
 [package]
 name = "hermes"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Adrien Gras <agr@owlnext.fr>"]
 description = "Hermes is an HTTP server that can be used to serve static files or as a reverse proxy with authentication and API configuration."

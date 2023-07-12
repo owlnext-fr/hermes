@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:latest
+    container_name: surrealdb
+    restart: always
+    ports:
+      - "${SDB_PUBLIC_PORT:-8000}:8000"
+    volumes:
+      - ./data:/data
+    command: "start --log ${SDB_LOG_LEVEL:-trace} --user ${SDB_USER:-surreal} --pass ${SDB_PASSWORD:-surreal} file:/data/hermes.db"

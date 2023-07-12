@@ -1,0 +1,22 @@
+[package]
+name = "hermes"
+version = "0.1.0"
+edition = "2021"
+authors = ["Adrien Gras <agr@owlnext.fr>"]
+description = "Hermes is an HTTP server that can be used to serve static files or as a reverse proxy with authentication and API configuration."
+documentation = "https://github.com/owlnext-fr/hermes"
+readme = "README.md"
+repository = "https://github.com/owlnext-fr/hermes"
+license-file = "LICENSE"
+keywords = ["rust", "http", "api", "surrealdb"]
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = {version = "1.0.71", features = ["backtrace"] }
+clap = { version = "4.3.11", features = ["derive"] }
+dotenvy = "0.15.7"
+surrealdb = "1.0.0-beta.9"
+thiserror = "1.0.43"
+tokio = { version = "1", features = ["full"] }

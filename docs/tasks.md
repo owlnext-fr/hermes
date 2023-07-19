@@ -15,7 +15,7 @@
 ### Database (Première partie) ✅
 - connecter la base de donnée
 
-### Serveur HTTP (Première partie)
+### Serveur HTTP (Première partie) ✅
 - créer un serveur HTTP avec Rocket
     - créer un builder qui va créer l'instance de Rocket
     - charger les states de Rocket

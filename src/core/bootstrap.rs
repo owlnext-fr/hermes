@@ -67,10 +67,12 @@ pub async fn launch_console(rocket: Rocket<Build>, command: String, args: HashMa
 
     // check if command failed
     if let Err(error) = &runtime {
-        let inner_error = error.root_cause().downcast_ref::<CommandError>().unwrap();
+        let inner_error = error.root_cause().downcast_ref::<CommandError>();
 
-        if matches!(inner_error, CommandError::AlreadyRunning(_, _)) {
-            bail!(PreRuntimeErrors::CommandSkipped(inner_error.to_string()));
+        if let Some(error) = inner_error {
+            if matches!(error, CommandError::AlreadyRunning(_, _)) {
+                bail!(PreRuntimeErrors::CommandSkipped(error.to_string()));
+            }
         }
 
         bail!(PreRuntimeErrors::FailedToRunCommand(command.name().to_string(), error.to_string()));

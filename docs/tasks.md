@@ -21,7 +21,7 @@
     - charger les states de Rocket
 - dispatcher l'instance de Rocket dans le bootstrap
 
-### Command interface
+### Command interface ✅
 - Créer le trait de commande
 - Créer la registry de commande
 - Charger la registry en tant que state dans rocket
@@ -32,7 +32,12 @@
 - Créer le service de manipulation des utilisateurs API
 - Créer une commande pour créer un utilisateur API
 
-### Serveur HTTP (2eme partie)
+### Serveur HTTP (2ème partie)
+- Créer un endpoint de test (uniquement en debug) pour tester la connexion.
+- Créer un endpoint de test (uniquement en debug) pour tester le mécanisme de connexion.
+- Créer un endpoint API pour créer un utilisateur.
+
+### Serveur HTTP (3eme partie)
 - Créer le endpoint pour consulter un site statique via son sous domaine
     - Ajouter une variable d'env pour la racine des sites statiques.
     - Créer un service pour vérifier si un site existe (mock)

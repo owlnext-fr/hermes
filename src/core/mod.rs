@@ -5,3 +5,6 @@ pub mod rocket_factory;
 pub mod commands;
 pub mod macros;
 pub mod exit_codes;
+pub mod catcher;
+pub mod response;
+pub mod validation;

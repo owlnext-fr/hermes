@@ -1,10 +1,11 @@
-use rocket::{Rocket, Build};
+use rocket::{Rocket, Build, catchers, routes};
 use anyhow::Result;
 
 
-use crate::commands::{test_command::TestCommand, add_api_user_command::AddApiUserCommand, remove_api_user_command::RemoveApiUserCommand};
+use crate::{commands::{test_command::TestCommand, add_api_user_command::AddApiUserCommand, remove_api_user_command::RemoveApiUserCommand}, controllers::app};
 
 use super::{database::DatabaseState, commands::{command_utils::ConsoleIO, command_registry::CommandRegistry}};
+use crate::core::catcher;
 
 /// Build a rocket instance.
 /// 
@@ -25,6 +26,17 @@ pub async fn build() -> Result<Rocket<Build>> {
 
     command_registry.register(Box::new(AddApiUserCommand));
     command_registry.register(Box::new(RemoveApiUserCommand));
+
+    // routes
+    build = build
+            .mount("/", routes![
+                app::status,
+                app::status_json,
+            ]);
+            
+    // catchers
+    build = build
+            .register("/", catchers![catcher::default_catcher]);
 
     // manage states
     build = build.manage(database);

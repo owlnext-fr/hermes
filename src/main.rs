@@ -7,6 +7,8 @@ pub mod core;
 pub mod model;
 pub mod middlewares;
 pub mod commands;
+pub mod exceptions;
+pub mod controllers;
 
 /// main entrypoint of the program.
 #[tokio::main]

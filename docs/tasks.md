@@ -34,7 +34,7 @@
 - Créer une commande pour supprimer un utilisateur API
 
 ### Serveur HTTP (2ème partie)
-- Créer un endpoint de test (uniquement en debug) pour tester la connexion.
+- Créer un endpoint de test (uniquement en debug) pour tester l'app (json + html). ✅
 - Créer un endpoint de test (uniquement en debug) pour tester le mécanisme de connexion.
 - Créer un endpoint API pour créer un utilisateur.
 

@@ -26,11 +26,12 @@
 - Créer la registry de commande
 - Charger la registry en tant que state dans rocket
 
-### Database (2eme partie)
+### Database (2eme partie) ✅
 - Créer le modèle "APIUser"
 - Créer les DTOs
 - Créer le service de manipulation des utilisateurs API
 - Créer une commande pour créer un utilisateur API
+- Créer une commande pour supprimer un utilisateur API
 
 ### Serveur HTTP (2ème partie)
 - Créer un endpoint de test (uniquement en debug) pour tester la connexion.

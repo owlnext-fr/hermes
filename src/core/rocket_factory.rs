@@ -2,7 +2,7 @@ use rocket::{Rocket, Build};
 use anyhow::Result;
 
 
-use crate::commands::test_command::TestCommand;
+use crate::commands::{test_command::TestCommand, add_api_user_command::AddApiUserCommand, remove_api_user_command::RemoveApiUserCommand};
 
 use super::{database::DatabaseState, commands::{command_utils::ConsoleIO, command_registry::CommandRegistry}};
 
@@ -19,7 +19,12 @@ pub async fn build() -> Result<Rocket<Build>> {
     let mut command_registry = CommandRegistry::new();
 
     // register commands
-    command_registry.register(Box::new(TestCommand));
+    if cfg!(debug_assertions) {
+        command_registry.register(Box::new(TestCommand));
+    }
+
+    command_registry.register(Box::new(AddApiUserCommand));
+    command_registry.register(Box::new(RemoveApiUserCommand));
 
     // manage states
     build = build.manage(database);

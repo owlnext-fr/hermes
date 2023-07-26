@@ -178,7 +178,7 @@ impl ConsoleIO {
     }
 
     /// creates a data table with headers
-    pub fn table(&self, headers: Vec<&str>, data: Vec<Vec<&str>>) {
+    pub fn table(&self, headers: Vec<String>, data: Vec<Vec<String>>) {
         let mut table = Table::new();
 
         let header_bold = headers
@@ -202,7 +202,7 @@ impl ConsoleIO {
     /// creates a key-value pair display.
     ///
     /// You can use LIST_SEPARATOR to split your listings
-    pub fn key_value_pair(&self, values: Vec<(&str, String)>) {
+    pub fn key_value_pair(&self, values: Vec<(String, String)>) {
         let mut table = Table::new();
         table.load_preset(NOTHING);
 

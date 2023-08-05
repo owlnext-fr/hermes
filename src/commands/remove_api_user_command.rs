@@ -1,7 +1,16 @@
 use anyhow::Result;
 use rocket::{Build, Rocket};
 
-use crate::{core::{commands::{command_trait::{CommandArgs, CommandTrait}, command_utils::ConsoleIO}, database::{DatabaseState, Connected}}, middlewares::api_user_middleware::ApiUserMiddleware};
+use crate::{
+    core::{
+        commands::{
+            command_trait::{CommandArgs, CommandTrait},
+            command_utils::ConsoleIO,
+        },
+        database::{Connected, DatabaseState},
+    },
+    middlewares::api_user_middleware::ApiUserMiddleware,
+};
 
 #[derive(Clone, Default)]
 /// A simple test command.
@@ -21,10 +30,15 @@ impl<'a> CommandTrait<'a> for RemoveApiUserCommand {
         false
     }
 
-    async fn do_run(&self, rocket: &Rocket<Build>, io: &ConsoleIO, _args: &CommandArgs) -> Result<()> {
+    async fn do_run(
+        &self,
+        rocket: &Rocket<Build>,
+        io: &ConsoleIO,
+        _args: &CommandArgs,
+    ) -> Result<()> {
         let db_conn = rocket.state::<DatabaseState<Connected>>().unwrap();
         let api_user_middleware = ApiUserMiddleware::new(db_conn.get_new_connection());
-        
+
         let active_users = api_user_middleware.list_active_api_users().await?;
 
         if active_users.len() == 0 {
@@ -35,18 +49,12 @@ impl<'a> CommandTrait<'a> for RemoveApiUserCommand {
         let mut displayable = Vec::<Vec<String>>::new();
 
         for (index, user) in active_users.iter().enumerate() {
-            displayable.push(vec![
-                index.to_string(),
-                user.name.clone()
-            ]);
+            displayable.push(vec![index.to_string(), user.name.clone()]);
         }
 
         io.table(
-            vec![
-                "Index".to_string(),
-                "Name".to_string()
-            ],
-            displayable.clone()
+            vec!["Index".to_string(), "Name".to_string()],
+            displayable.clone(),
         );
         let max = displayable.len() - 1;
 

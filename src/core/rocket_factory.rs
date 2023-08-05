@@ -1,14 +1,22 @@
-use rocket::{Rocket, Build, catchers, routes};
 use anyhow::Result;
+use rocket::{catchers, routes, Build, Rocket};
 
+use crate::{
+    commands::{
+        add_api_user_command::AddApiUserCommand, remove_api_user_command::RemoveApiUserCommand,
+        test_command::TestCommand,
+    },
+    controllers::{api, app},
+};
 
-use crate::{commands::{test_command::TestCommand, add_api_user_command::AddApiUserCommand, remove_api_user_command::RemoveApiUserCommand}, controllers::app};
-
-use super::{database::DatabaseState, commands::{command_utils::ConsoleIO, command_registry::CommandRegistry}};
+use super::{
+    commands::{command_registry::CommandRegistry, command_utils::ConsoleIO},
+    database::DatabaseState,
+};
 use crate::core::catcher;
 
 /// Build a rocket instance.
-/// 
+///
 /// This function will build a rocket instance with all the required states, middlewares and routes.
 pub async fn build() -> Result<Rocket<Build>> {
     // build rocket instance
@@ -28,15 +36,17 @@ pub async fn build() -> Result<Rocket<Build>> {
     command_registry.register(Box::new(RemoveApiUserCommand));
 
     // routes
-    build = build
-            .mount("/", routes![
-                app::status,
-                app::status_json,
-            ]);
-            
+    build = build.mount(
+        "/",
+        routes![app::status, app::status_json, api::create_user],
+    );
+
+    if cfg!(debug_assertions) {
+        build = build.mount("/", routes![app::test_api_user_auth,]);
+    }
+
     // catchers
-    build = build
-            .register("/", catchers![catcher::default_catcher]);
+    build = build.register("/", catchers![catcher::default_catcher]);
 
     // manage states
     build = build.manage(database);

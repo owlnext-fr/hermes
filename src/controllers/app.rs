@@ -1,8 +1,30 @@
 use rocket::get;
+use serde::{Deserialize, Serialize};
 
-use crate::{core::response::{ApiResponse, ApiResult}, model::utils::app_status::AppStatus, http_ok};
+use crate::{
+    core::{
+        guards::api_user_guard::AuthenticatedApiUser,
+        response::{ApiResponse, ApiResult},
+    },
+    http_ok,
+    model::utils::app_status::AppStatus,
+};
 use rocket::response::content::RawHtml;
 
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct TestAuthResponse {
+    pub message: String,
+}
+
+#[get("/test/api-user-auth", format = "json")]
+pub fn test_api_user_auth(auth_api_user: AuthenticatedApiUser) -> ApiResult<TestAuthResponse> {
+    let _api_user = auth_api_user.api_user;
+
+    http_ok!(TestAuthResponse {
+        message: format!("Hello, {}!", _api_user.name),
+    });
+}
 
 #[get("/status", format = "json", rank = 1)]
 pub fn status_json() -> ApiResult<AppStatus> {
@@ -13,7 +35,8 @@ pub fn status_json() -> ApiResult<AppStatus> {
 pub fn status() -> RawHtml<String> {
     let status = AppStatus::new();
 
-    let page = RawHtml(format!(r#"
+    let page = RawHtml(format!(
+        r#"
     <!doctype html>
 <html lang="en">
   <head>
@@ -33,7 +56,9 @@ pub fn status() -> RawHtml<String> {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
   </body>
 </html>
-    "#, status.name, status.description, status.version));
+    "#,
+        status.name, status.description, status.version
+    ));
 
     page
 }

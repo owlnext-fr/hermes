@@ -33,28 +33,39 @@
 - Créer une commande pour créer un utilisateur API
 - Créer une commande pour supprimer un utilisateur API
 
-### Serveur HTTP (2ème partie)
-- Créer un endpoint de test (uniquement en debug) pour tester l'app (json + html). ✅
-- Créer un endpoint de test (uniquement en debug) pour tester le mécanisme de connexion.
-- Créer un endpoint API pour créer un utilisateur.
+### Serveur HTTP (2ème partie)  ✅
+- Créer un endpoint de test (uniquement en debug) pour tester l'app (json + html).
 
-### Serveur HTTP (3eme partie)
-- Créer le endpoint pour consulter un site statique via son sous domaine
-    - Ajouter une variable d'env pour la racine des sites statiques.
-    - Créer un service pour vérifier si un site existe (mock)
-    - Créer un service pour vérifier si un utilisateur a accès à un site (mock)
-    - Servir le fichier demandé si l'utilisateur a accès au site
+### Authentification API ✅
+- Créer le guard d'authentification API pour authentifier un APIUser sur l'API.
+- Créer un endpoint de test (uniquement en debug) pour tester l'autentification API (json)
 
-### Database (3eme partie)
+### Gestion des User ✅
+- Créer le modèle "User" (name, email, password)
+- Créer les DTOs
+- Créer le service de manipulation des utilisateurs API
+- Créer un endpoint pour créer un utilisateur (POST /api/users -> JSON)
+
+### Gestion des Sites
 - Créer le modèle "Site"
 - Créer les DTOs du modèle "Site"
 - Créer le service de manipulation des sites
 - Créer une commande pour rafraichir les sites depuis la racine des sites statiques
+    - variable d'env pour le chemin root des sites statiques
+
+### Gestion des SiteAccess
 - Créer le modèle "SiteAccess"
 - Créer les DTOs du modèle "SiteAccess"
 - Créer le service de manipulation des accès aux siteaccess.
-- Remplacer le mock du service de vérification d'accès par le service de manipulation des accès aux sites.
-- Remplacer le mock du service de vérification de l'existence d'un site par le service de manipulation des sites.
 
-### Authentification
-> TBD
+### Gestion des Sites (2ème partie)
+- Créer le endpoint pour consulter un site statique via son sous domaine
+    - Ajouter une variable d'env pour la racine des sites statiques.
+    - Créer une méthode pour vérifier si un site existe
+    - Créer une méthode pour vérifier si un utilisateur a accès à un site (mock -> true)
+    - Servir le fichier demandé si l'utilisateur a accès au site
+
+### Authentification User + SiteAccess
+- Créer la page de login générique (html)
+- Créer le handler du endpoint de login (POST /login -> cookie + redirect to index)
+- Créer le guard d'authentification User + SiteAccess pour authentifier un User sur un SiteAccess via cookie.

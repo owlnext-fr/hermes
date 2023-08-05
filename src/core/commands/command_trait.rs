@@ -1,10 +1,14 @@
 use std::{collections::HashMap, str::FromStr};
 
-use anyhow::{Result, bail};
-use rocket::{Rocket, Build};
+use anyhow::{bail, Result};
+use rocket::{Build, Rocket};
 use thiserror::Error;
 
-use crate::{model::command_log::CommandLog, middlewares::command_middleware::{CommandMiddleware, CommandMiddlewareError}, core::database::{DatabaseState, Connected}};
+use crate::{
+    core::database::{Connected, DatabaseState},
+    middlewares::command_middleware::{CommandMiddleware, CommandMiddlewareError},
+    model::command_log::CommandLog,
+};
 
 use super::command_utils::ConsoleIO;
 
@@ -42,16 +46,25 @@ pub trait CommandTrait<'a>: Send + Sync {
     fn is_parallel(&self) -> bool;
 
     /// The command entrypoint.
-    /// 
+    ///
     /// This will contain all the command logic (LLOC).
-    async fn do_run(&self, rocket: &Rocket<Build>, io: &ConsoleIO, args: &CommandArgs) -> Result<()>;
+    async fn do_run(
+        &self,
+        rocket: &Rocket<Build>,
+        io: &ConsoleIO,
+        args: &CommandArgs,
+    ) -> Result<()>;
 
     /// Starting phase of the command.
-    /// 
+    ///
     /// This will be called before the command execution.
-    /// 
+    ///
     /// This will be used to aquire a lock on the command, if the command is not parallel, then declare the command log.
-    async fn begin(&self, middleware: &CommandMiddleware, args: &CommandArgs) -> Result<CommandLog> {
+    async fn begin(
+        &self,
+        middleware: &CommandMiddleware,
+        args: &CommandArgs,
+    ) -> Result<CommandLog> {
         // get args as string
         let args_as_str = self.get_args_as_str(args);
 
@@ -61,12 +74,24 @@ pub trait CommandTrait<'a>: Send + Sync {
 
             if running.is_err() {
                 let inner = running.err().unwrap();
-                let inner_error = inner.root_cause().downcast_ref::<CommandMiddlewareError>().unwrap();
+                let inner_error = inner
+                    .root_cause()
+                    .downcast_ref::<CommandMiddlewareError>()
+                    .unwrap();
 
                 if matches!(inner_error, CommandMiddlewareError::AlreadyRunning(_, _)) {
                     let log = middleware.create_log(&self.name(), &args_as_str).await?;
-                    self.end(middleware, log, CommandResult::SKIPPED, Some(inner_error.to_string())).await?;
-                    bail!(CommandError::AlreadyRunning(self.name().into(), args_as_str));
+                    self.end(
+                        middleware,
+                        log,
+                        CommandResult::SKIPPED,
+                        Some(inner_error.to_string()),
+                    )
+                    .await?;
+                    bail!(CommandError::AlreadyRunning(
+                        self.name().into(),
+                        args_as_str
+                    ));
                 }
 
                 if matches!(inner_error, CommandMiddlewareError::DatabaseError(_)) {
@@ -79,7 +104,10 @@ pub trait CommandTrait<'a>: Send + Sync {
         let log = middleware.create_log(&self.name(), &args_as_str).await;
 
         if let Err(error) = &log {
-            let inner = error.root_cause().downcast_ref::<CommandMiddlewareError>().unwrap();
+            let inner = error
+                .root_cause()
+                .downcast_ref::<CommandMiddlewareError>()
+                .unwrap();
 
             if matches!(inner, CommandMiddlewareError::DatabaseError(_)) {
                 bail!(CommandError::DatabaseError(inner.to_string()));
@@ -88,18 +116,29 @@ pub trait CommandTrait<'a>: Send + Sync {
 
         Ok(log?)
     }
-    
+
     /// Ending phase of the command.
-    /// 
+    ///
     /// This will be called after the command execution.
-    /// 
+    ///
     /// This will be used to update the command log with the final status, error message and elapsed time.
-    async fn end(&self, middleware: &CommandMiddleware, command_log: CommandLog, command_result: CommandResult, message: Option<String>) -> Result<CommandLog> {
+    async fn end(
+        &self,
+        middleware: &CommandMiddleware,
+        command_log: CommandLog,
+        command_result: CommandResult,
+        message: Option<String>,
+    ) -> Result<CommandLog> {
         // update the command log.
-        let log = middleware.update_log(&command_log, command_result, message).await;
+        let log = middleware
+            .update_log(&command_log, command_result, message)
+            .await;
 
         if let Err(error) = &log {
-            let inner = error.root_cause().downcast_ref::<CommandMiddlewareError>().unwrap();
+            let inner = error
+                .root_cause()
+                .downcast_ref::<CommandMiddlewareError>()
+                .unwrap();
 
             if matches!(inner, CommandMiddlewareError::DatabaseError(_)) {
                 bail!(CommandError::DatabaseError(inner.to_string()));
@@ -129,17 +168,29 @@ pub trait CommandTrait<'a>: Send + Sync {
 
         // if the command exited with an error, then update the command log with the error message.
         if let Err(error) = &exec_result {
-            log = self.end(&command_log_middleware, log, CommandResult::ERROR, Some(error.to_string())).await?;
+            log = self
+                .end(
+                    &command_log_middleware,
+                    log,
+                    CommandResult::ERROR,
+                    Some(error.to_string()),
+                )
+                .await?;
             io.error(&error.to_string());
         } else {
             // if the command exited with success, then update the command log with the success status.
-            log = self.end(&command_log_middleware, log, CommandResult::SUCCESS, None).await?;
+            log = self
+                .end(&command_log_middleware, log, CommandResult::SUCCESS, None)
+                .await?;
         }
 
         // display the command status and elapsed time.
         io.new_line();
         let elapsed = log.elapsed.unwrap() as f64 / 1000.0;
-        io.writeln(&format!("-- Status: {:?}, Elapsed: {:.3} secs --", &log.status, elapsed));
+        io.writeln(&format!(
+            "-- Status: {:?}, Elapsed: {:.3} secs --",
+            &log.status, elapsed
+        ));
 
         // if the command exited with an error, then return the error.
         if exec_result.is_err() {

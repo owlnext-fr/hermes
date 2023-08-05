@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use anyhow::Result;
 use clap::{builder::ValueParser, Parser, Subcommand};
+use std::collections::HashMap;
 
 /// A struct representing the CLI.
 #[derive(Parser)]
@@ -15,13 +15,13 @@ pub struct Cli {
 pub enum Command {
     /// Start the HTTP server
     Server,
-    /// Start the console interface 
+    /// Start the console interface
     Console {
         /// Command to execute
         console_command: String,
         /// Arguments of the command
         #[arg(num_args(0..), value_parser = ValueParser::new(parse_subcommand_args))]
-        args: HashMap<String, Option<String>>
+        args: HashMap<String, Option<String>>,
     },
 }
 

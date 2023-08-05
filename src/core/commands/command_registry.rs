@@ -3,11 +3,11 @@ use std::collections::HashMap;
 use super::command_trait::CommandTrait;
 
 /// A command registry.
-/// 
+///
 /// This struct is used to store all the commands as a rocket managed state.
 pub struct CommandRegistry<'a> {
     /// The commands.
-    /// 
+    ///
     /// Commands are stored in a boxed trait object to allow different types of commands to be stored in the same hashmap.
     pub commands: HashMap<&'a str, Box<dyn CommandTrait<'a>>>,
 }

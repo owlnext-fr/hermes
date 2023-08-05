@@ -1,6 +1,7 @@
 [default]
 address = "0.0.0.0"
 port = 8080
+secret_key = "RZvh6e+OUQ28fEUSTRhZlkXDvp6nBDRo86/OSCvQiPW45c9rZZeLrjNdvantcpecLzUJuxaXgeTbDt+ENXyquw=="
 
 [default.limits]
 json = "2 MiB"

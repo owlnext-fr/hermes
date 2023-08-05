@@ -1,10 +1,10 @@
 use std::env;
 use std::marker::PhantomData;
 
-use surrealdb::Surreal;
-use surrealdb::engine::remote::ws::{Ws, Client};
-use anyhow::{Result, Context};
+use anyhow::{Context, Result};
+use surrealdb::engine::remote::ws::{Client, Ws};
 use surrealdb::opt::auth::Root;
+use surrealdb::Surreal;
 
 /// A struct representing the disconnected state of the database.
 #[derive(Debug)]
@@ -14,19 +14,19 @@ pub struct Disconnected;
 #[derive(Debug)]
 pub struct Connected;
 
-/// A struct containing the database connection. 
+/// A struct containing the database connection.
 /// Default state is disconnected.
-/// 
+///
 /// This struct is generic over the state of the connection.
 #[derive(Debug)]
 pub struct DatabaseState<T = Disconnected> {
     conn: Surreal<Client>,
-    state: PhantomData<T>
+    state: PhantomData<T>,
 }
 
 impl DatabaseState<Disconnected> {
     /// Connects to the database and returns a new DatabaseState with the connected state.
-    /// 
+    ///
     /// This will return an Err if any of the following environment variables are not set:
     /// - SDB_HOST (the host of the database)
     /// - SDB_PUBLIC_PORT (the public port of the database)
@@ -59,7 +59,7 @@ impl DatabaseState<Disconnected> {
         // Return the new DatabaseState.
         Ok(DatabaseState {
             conn,
-            state: PhantomData
+            state: PhantomData,
         })
     }
 }

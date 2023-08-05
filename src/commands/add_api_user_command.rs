@@ -1,7 +1,18 @@
 use anyhow::Result;
 use rocket::{Build, Rocket};
 
-use crate::{core::{commands::{command_trait::{CommandArgs, CommandTrait}, command_utils::ConsoleIO}, database::{DatabaseState, Connected}}, middlewares::api_user_middleware::ApiUserMiddleware, model::api_user::NewApiUserDTO};
+use crate::{
+    core::{
+        cipher::Cipher,
+        commands::{
+            command_trait::{CommandArgs, CommandTrait},
+            command_utils::ConsoleIO,
+        },
+        database::{Connected, DatabaseState},
+    },
+    middlewares::api_user_middleware::ApiUserMiddleware,
+    model::api_user::NewApiUserDTO,
+};
 
 #[derive(Clone, Default)]
 /// A simple test command.
@@ -21,10 +32,15 @@ impl<'a> CommandTrait<'a> for AddApiUserCommand {
         false
     }
 
-    async fn do_run(&self, rocket: &Rocket<Build>, io: &ConsoleIO, args: &CommandArgs) -> Result<()> {
+    async fn do_run(
+        &self,
+        rocket: &Rocket<Build>,
+        io: &ConsoleIO,
+        args: &CommandArgs,
+    ) -> Result<()> {
         let db_conn = rocket.state::<DatabaseState<Connected>>().unwrap();
         let api_user_middleware = ApiUserMiddleware::new(db_conn.get_new_connection());
-        
+
         let name: String;
         let key: String;
 
@@ -43,15 +59,25 @@ impl<'a> CommandTrait<'a> for AddApiUserCommand {
             key = key_arg.unwrap().as_ref().unwrap().to_string();
         }
 
+        if !Cipher::validate_password_complexity(&key) {
+            return Err(anyhow::anyhow!("The key must be at least 10 characters long and contain at least one number, one uppercase letter, one lowercase letter and one special character"));
+        }
+
         io.writeln(&format!("Name: {}", &name));
         io.writeln(&format!("Key: {}", &key));
 
-        let user = api_user_middleware.create(NewApiUserDTO {
-            name: name.clone(),
-            api_key: key.clone()
-        }).await?;
+        let user = api_user_middleware
+            .create(NewApiUserDTO {
+                name: name.clone(),
+                api_key: key.clone(),
+            })
+            .await?;
 
-        io.success(&format!("Created user: {} ({})", &user.name, &user.id.unwrap()));
+        io.success(&format!(
+            "Created user: {} ({})",
+            &user.name,
+            &user.id.unwrap()
+        ));
 
         Ok(())
     }

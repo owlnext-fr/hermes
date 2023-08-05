@@ -4,7 +4,7 @@ use crate::core::response::{ApiResponse, ErrorMessage};
 use crate::core::validation::{CachedParseErrors, CachedValidationErrors};
 use crate::exceptions::dto::http_exception::HttpException;
 use rocket::http::Status;
-use rocket::{Request, catch};
+use rocket::{catch, Request};
 
 const DEFAULT_ERROR_MESSAGE: &str = "__DEFAULT__";
 

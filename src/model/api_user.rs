@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
-use surrealdb::sql::Thing;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 use super::impls::model_trait::ModelTrait;
 
@@ -18,7 +18,7 @@ pub struct ApiUser {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub deleted_at: Option<DateTime<Utc>>,
-    pub is_deleted: bool
+    pub is_deleted: bool,
 }
 
 impl ModelTrait for ApiUser {
@@ -68,7 +68,7 @@ impl From<NewApiUserDTO> for ApiUser {
             created_at: Utc::now(),
             updated_at: Utc::now(),
             deleted_at: None,
-            is_deleted: false
+            is_deleted: false,
         }
     }
 }
@@ -80,5 +80,5 @@ impl From<NewApiUserDTO> for ApiUser {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct NewApiUserDTO {
     pub name: String,
-    pub api_key: String
+    pub api_key: String,
 }

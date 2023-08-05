@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
-use surrealdb::sql::Thing;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 /// The command log table name.
 pub const COMMAND_LOG_TABLE: &str = "command_log";
@@ -27,5 +27,5 @@ pub struct CommandLog {
     pub message: Option<String>,
     pub created_at: DateTime<Utc>,
     pub closed_at: Option<DateTime<Utc>>,
-    pub elapsed: Option<i64>
+    pub elapsed: Option<i64>,
 }

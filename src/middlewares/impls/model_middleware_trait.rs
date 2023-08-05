@@ -27,6 +27,4 @@ pub trait ModelMiddlewareTrait {
         model.set_is_deleted(true);
         Ok(())
     }
-
-
 }

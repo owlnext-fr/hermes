@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::{Result, bail};
+use anyhow::{bail, Result};
 use rocket::{Build, Rocket};
 use thiserror::Error;
 
@@ -30,20 +30,28 @@ pub async fn launch_server(rocket: Rocket<Build>) -> Result<i32> {
     let possible_ignited = rocket.ignite().await;
 
     if let Err(error) = &possible_ignited {
-        bail!(PreRuntimeErrors::FailedToIgniteRocketInstance(error.to_string()));
+        bail!(PreRuntimeErrors::FailedToIgniteRocketInstance(
+            error.to_string()
+        ));
     }
 
     let possible_launched = possible_ignited?.launch().await;
 
     if let Err(error) = &possible_launched {
-        bail!(PreRuntimeErrors::FailedToLaunchRocketInstance(error.to_string()));
+        bail!(PreRuntimeErrors::FailedToLaunchRocketInstance(
+            error.to_string()
+        ));
     }
 
     Ok(0)
 }
 
 /// Launches the console interface.
-pub async fn launch_console(rocket: Rocket<Build>, command: String, args: HashMap<String, Option<String>>) -> Result<i32>{
+pub async fn launch_console(
+    rocket: Rocket<Build>,
+    command: String,
+    args: HashMap<String, Option<String>>,
+) -> Result<i32> {
     // get command registry
     let possible_command_registry = rocket.state::<CommandRegistry>();
 
@@ -75,7 +83,10 @@ pub async fn launch_console(rocket: Rocket<Build>, command: String, args: HashMa
             }
         }
 
-        bail!(PreRuntimeErrors::FailedToRunCommand(command.name().to_string(), error.to_string()));
+        bail!(PreRuntimeErrors::FailedToRunCommand(
+            command.name().to_string(),
+            error.to_string()
+        ));
     }
 
     Ok(0)

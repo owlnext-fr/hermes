@@ -1,9 +1,12 @@
-use anyhow::{Result, bail};
+use anyhow::{bail, Result};
 use chrono::Utc;
-use surrealdb::{Surreal, engine::remote::ws::Client};
+use surrealdb::{engine::remote::ws::Client, Surreal};
 use thiserror::Error;
 
-use crate::{model::command_log::{CommandLog, COMMAND_LOG_TABLE, CommandStatus}, core::commands::command_trait::CommandResult};
+use crate::{
+    core::commands::command_trait::CommandResult,
+    model::command_log::{CommandLog, CommandStatus, COMMAND_LOG_TABLE},
+};
 
 #[derive(Debug, Error)]
 pub enum CommandMiddlewareError {
@@ -23,9 +26,7 @@ pub struct CommandMiddleware {
 impl CommandMiddleware {
     /// Create a new CommandMiddleware.
     pub fn new(db: Surreal<Client>) -> Self {
-        Self {
-            db
-        }
+        Self { db }
     }
 
     /// Check if a command is already running in database.
@@ -44,7 +45,10 @@ impl CommandMiddleware {
         let exists: Vec<CommandLog> = result?.take(0)?;
 
         if exists.len() > 0 {
-            bail!(CommandMiddlewareError::AlreadyRunning(command_name.to_string(), command_args.to_string()));
+            bail!(CommandMiddlewareError::AlreadyRunning(
+                command_name.to_string(),
+                command_args.to_string()
+            ));
         }
 
         Ok(())
@@ -52,7 +56,8 @@ impl CommandMiddleware {
 
     /// Create a new command log in database.
     pub async fn create_log(&self, command_name: &str, command_args: &str) -> Result<CommandLog> {
-        let created = self.db
+        let created = self
+            .db
             .create(COMMAND_LOG_TABLE)
             .content(CommandLog {
                 id: None,
@@ -63,7 +68,8 @@ impl CommandMiddleware {
                 created_at: Utc::now(),
                 closed_at: None,
                 elapsed: None,
-            }).await;
+            })
+            .await;
 
         if let Err(error) = &created {
             bail!(CommandMiddlewareError::DatabaseError(error.to_string()));
@@ -73,7 +79,12 @@ impl CommandMiddleware {
     }
 
     /// Update a command log in database.
-    pub async fn update_log(&self, command_log: &CommandLog, command_result: CommandResult, message: Option<String>) -> Result<CommandLog> {
+    pub async fn update_log(
+        &self,
+        command_log: &CommandLog,
+        command_result: CommandResult,
+        message: Option<String>,
+    ) -> Result<CommandLog> {
         let mut log = command_log.clone();
 
         log.status = match command_result {
@@ -84,11 +95,17 @@ impl CommandMiddleware {
 
         log.message = message;
         log.closed_at = Some(Utc::now());
-        log.elapsed = Some(log.closed_at.unwrap().signed_duration_since(log.created_at).num_milliseconds());
+        log.elapsed = Some(
+            log.closed_at
+                .unwrap()
+                .signed_duration_since(log.created_at)
+                .num_milliseconds(),
+        );
 
         let log_id = log.id.clone().unwrap();
 
-        let updated = self.db
+        let updated = self
+            .db
             .update((COMMAND_LOG_TABLE, log_id.id))
             .content(log)
             .await;

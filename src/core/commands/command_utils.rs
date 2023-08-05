@@ -65,7 +65,10 @@ impl ConsoleIO {
     pub fn title(&self, title: &str) {
         self.new_line();
         self.stdout
-            .write_line(&format!("{}", style(format!("--- {title} ---")).yellow().bold()))
+            .write_line(&format!(
+                "{}",
+                style(format!("--- {title} ---")).yellow().bold()
+            ))
             .unwrap();
     }
 

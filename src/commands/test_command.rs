@@ -1,7 +1,10 @@
 use anyhow::Result;
 use rocket::{Build, Rocket};
 
-use crate::core::commands::{command_trait::{CommandArgs, CommandTrait}, command_utils::ConsoleIO};
+use crate::core::commands::{
+    command_trait::{CommandArgs, CommandTrait},
+    command_utils::ConsoleIO,
+};
 
 #[derive(Clone, Default)]
 /// A simple test command.
@@ -21,7 +24,12 @@ impl<'a> CommandTrait<'a> for TestCommand {
         false
     }
 
-    async fn do_run(&self, _rocket: &Rocket<Build>, io: &ConsoleIO, args: &CommandArgs) -> Result<()> {
+    async fn do_run(
+        &self,
+        _rocket: &Rocket<Build>,
+        io: &ConsoleIO,
+        args: &CommandArgs,
+    ) -> Result<()> {
         io.info("Hello from test command!");
         io.info(&format!("Args: {:?}", args));
 

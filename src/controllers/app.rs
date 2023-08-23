@@ -2,10 +2,7 @@ use rocket::get;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    core::{
-        guards::api_user_guard::AuthenticatedApiUser,
-        response::{ApiResponse, ApiResult},
-    },
+    core::{guards::api_user_guard::AuthenticatedApiUser, response::ApiResult},
     http_ok,
     model::utils::app_status::AppStatus,
 };

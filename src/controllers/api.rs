@@ -13,7 +13,7 @@ use crate::{
     },
     http_ok,
     middlewares::user_middleware::UserMiddleware,
-    model::user::{NewUserDTO, UserDetailsDTO},
+    model::user::NewUserDTO,
 };
 
 #[post("/api/users", format = "json", data = "<new_user>")]

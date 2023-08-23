@@ -1,11 +1,11 @@
 use anyhow::{bail, Result};
-use surrealdb::{engine::remote::ws::Client, Error, Surreal};
+use surrealdb::{engine::remote::ws::Client, Surreal};
 use thiserror::Error;
 
 use crate::{
     core::cipher::Cipher,
     model::{
-        api_user::{ApiUser, NewApiUserDTO, API_USER_TABLE},
+        api_user::{ApiUser},
         user::{NewUserDTO, User, UserDetailsDTO, UserDetailsFetchedDTO, USER_TABLE},
     },
 };
@@ -79,7 +79,7 @@ impl UserMiddleware {
         Ok(user.unwrap())
     }
 
-    pub fn find_by_login(&self, login: String) -> Result<User> {
+    pub fn find_by_login(&self, _login: String) -> Result<User> {
         todo!()
     }
 }

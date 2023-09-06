@@ -50,8 +50,7 @@ impl SiteMiddleware {
 
     pub async fn delete(&self, site: &Site) -> Result<Site> {
         let mut site = site.clone();
-        site.set_is_deleted(true);
-        site.set_deleted_date(Some(chrono::Utc::now()));
+        self.flag_deletion(&mut site)?;
 
         let id = site.id.clone().unwrap().id;
 
@@ -111,5 +110,23 @@ impl SiteMiddleware {
         let sites: Vec<Site> = result?.take(0)?;
 
         Ok(sites)
+    }
+
+    pub async fn find_one_by_id(&self, thing: String) -> Result<Option<Site>> {
+        let sql = r#"
+            SELECT *
+            FROM type::thing("site", $site_id)
+            FETCH created_by
+        "#;
+
+        let result = self.db.query(sql).bind(("site_id", thing)).await;
+
+        if let Err(error) = &result {
+            bail!(SiteMiddlewareError::DatabaseError(error.to_string()));
+        }
+
+        let user: Option<Site> = result?.take(0)?;
+
+        Ok(user)
     }
 }

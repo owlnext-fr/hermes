@@ -1,11 +1,15 @@
 use anyhow::{bail, Result};
-use surrealdb::{engine::remote::ws::Client, Surreal};
+use surrealdb::{
+    engine::remote::ws::Client,
+    sql::{Op, Thing},
+    Surreal,
+};
 use thiserror::Error;
 
 use crate::{
     core::cipher::Cipher,
     model::{
-        api_user::{ApiUser},
+        api_user::ApiUser,
         user::{NewUserDTO, User, UserDetailsDTO, UserDetailsFetchedDTO, USER_TABLE},
     },
 };
@@ -79,8 +83,26 @@ impl UserMiddleware {
         Ok(user.unwrap())
     }
 
-    pub fn find_by_login(&self, _login: String) -> Result<User> {
+    pub fn find_by_login(&self, _login: String) -> Result<Option<User>> {
         todo!()
+    }
+
+    pub async fn find_one_by_id(&self, thing: String) -> Result<Option<User>> {
+        let sql = r#"
+            SELECT *
+            FROM type::thing("user", $user_id)
+            FETCH created_by
+        "#;
+
+        let result = self.db.query(sql).bind(("user_id", thing)).await;
+
+        if let Err(error) = &result {
+            bail!(UserMiddlewareError::DatabaseError(error.to_string()));
+        }
+
+        let user: Option<User> = result?.take(0)?;
+
+        Ok(user)
     }
 }
 

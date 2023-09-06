@@ -46,7 +46,7 @@
 - Créer le service de manipulation des utilisateurs API
 - Créer un endpoint pour créer un utilisateur (POST /api/users -> JSON)
 
-### Gestion des Sites
+### Gestion des Sites ✅
 - Créer le modèle "Site"
 - Créer les DTOs du modèle "Site"
 - Créer le service de manipulation des sites
@@ -60,7 +60,6 @@
 
 ### Gestion des Sites (2ème partie)
 - Créer le endpoint pour consulter un site statique via son sous domaine
-    - Ajouter une variable d'env pour la racine des sites statiques.
     - Créer une méthode pour vérifier si un site existe
     - Créer une méthode pour vérifier si un utilisateur a accès à un site (mock -> true)
     - Servir le fichier demandé si l'utilisateur a accès au site

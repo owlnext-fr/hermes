@@ -30,6 +30,7 @@ pub async fn launch_server(rocket: Rocket<Build>) -> Result<i32> {
     let possible_ignited = rocket.ignite().await;
 
     if let Err(error) = &possible_ignited {
+        dbg!(&error);
         bail!(PreRuntimeErrors::FailedToIgniteRocketInstance(
             error.to_string()
         ));

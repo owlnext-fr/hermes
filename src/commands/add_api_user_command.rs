@@ -15,7 +15,6 @@ use crate::{
 };
 
 #[derive(Clone, Default)]
-/// A simple test command.
 pub struct AddApiUserCommand;
 
 #[async_trait::async_trait]

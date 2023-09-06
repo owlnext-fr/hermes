@@ -4,7 +4,7 @@ use rocket::{catchers, routes, Build, Rocket};
 use crate::{
     commands::{
         add_api_user_command::AddApiUserCommand, remove_api_user_command::RemoveApiUserCommand,
-        test_command::TestCommand,
+        scan_sites_command::ScanSitesCommand, test_command::TestCommand,
     },
     controllers::{api, app},
 };
@@ -34,6 +34,7 @@ pub async fn build() -> Result<Rocket<Build>> {
 
     command_registry.register(Box::new(AddApiUserCommand));
     command_registry.register(Box::new(RemoveApiUserCommand));
+    command_registry.register(Box::new(ScanSitesCommand));
 
     // routes
     build = build.mount(

@@ -19,12 +19,12 @@ pub struct Connected;
 ///
 /// This struct is generic over the state of the connection.
 #[derive(Debug)]
-pub struct DatabaseState<T = Disconnected> {
+pub struct DatabaseState<T = self::Disconnected> {
     conn: Surreal<Client>,
     state: PhantomData<T>,
 }
 
-impl DatabaseState<Disconnected> {
+impl DatabaseState<self::Disconnected> {
     /// Connects to the database and returns a new DatabaseState with the connected state.
     ///
     /// This will return an Err if any of the following environment variables are not set:
@@ -34,7 +34,7 @@ impl DatabaseState<Disconnected> {
     /// - SDB_PASSWORD (the password to use to connect to the database)
     /// - SDB_NAMESPACE (the namespace to use to connect to the database)
     /// - SDB_DB (the database to use to connect to the database)
-    pub async fn connect() -> Result<DatabaseState<Connected>> {
+    pub async fn connect() -> Result<DatabaseState<self::Connected>> {
         // Get the environment variables.
         let host = env::var("SDB_HOST").with_context(|| "SDB_HOST is not set")?;
         let port = env::var("SDB_PUBLIC_PORT").with_context(|| "SDB_PUBLIC_PORT is not set")?;
@@ -64,7 +64,7 @@ impl DatabaseState<Disconnected> {
     }
 }
 
-impl DatabaseState<Connected> {
+impl DatabaseState<self::Connected> {
     /// Returns a clone of the connection.
     pub fn get_new_connection(&self) -> Surreal<Client> {
         self.conn.clone()

@@ -35,3 +35,5 @@ zxcvbn = "2.2.2"
 rust-argon2 = "1.0.0"
 ulid = "1.0.0"
 slugify = "0.1.0"
+url = "2.4.1"
+redis = { version = "0.23.3", features = ['tokio-comp'] }

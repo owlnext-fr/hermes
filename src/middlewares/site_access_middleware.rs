@@ -8,15 +8,13 @@ use super::{
 };
 use crate::model::{
     api_user::ApiUser,
-    site::{Site, SiteDetailsDTO, SiteDetailsFetchedDTO, SITE_TABLE},
+    site::SITE_TABLE,
     site_access::{
         NewSiteAccessDTO, SiteAccess, SiteAccessDetailsDTO, SiteAccessDetailsFetchedDTO,
         UpdateSiteAccessDTO, SITE_ACCESS_TABLE,
     },
     user::USER_TABLE,
 };
-
-use surrealdb::Error;
 
 #[derive(Debug, Error)]
 pub enum SiteAccessMiddlewareError {

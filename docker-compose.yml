@@ -10,3 +10,13 @@ services:
     volumes:
       - ./data:/data
     command: "start --log ${SDB_LOG_LEVEL:-trace} --user ${SDB_USER:-surreal} --pass ${SDB_PASSWORD:-surreal} file:/data/hermes.db"
+
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    ulimits:
+      memlock: -1
+    ports:
+      - "6379:6379"
+    command: entrypoint.sh dragonfly --logtostderr --requirepass=${DRAGONFLY_PASS:-dragonfly} --cache_mode=true --dbnum 1 --port 6379 --save_schedule "*:30" --maxmemory=12gb --keys_output_limit=12288 --dbfilename dump
+    volumes:
+      - ./data/dragonfly:/data

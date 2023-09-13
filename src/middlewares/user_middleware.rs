@@ -1,7 +1,6 @@
 use anyhow::{bail, Result};
 use surrealdb::{
     engine::remote::ws::Client,
-    sql::{Op, Thing},
     Surreal,
 };
 use thiserror::Error;

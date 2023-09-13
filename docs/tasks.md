@@ -53,7 +53,7 @@
 - Créer une commande pour rafraichir les sites depuis la racine des sites statiques
     - variable d'env pour le chemin root des sites statiques
 
-### Gestion des SiteAccess
+### Gestion des SiteAccess ✅
 - Créer le modèle "SiteAccess"
 - Créer les DTOs du modèle "SiteAccess"
 - Créer le service de manipulation des accès aux siteaccess.
@@ -65,6 +65,7 @@
     - Servir le fichier demandé si l'utilisateur a accès au site
 
 ### Authentification User + SiteAccess
+- Créer le endpoint pour créer un SiteAccess pour un site et un user donné
 - Créer la page de login générique (html)
 - Créer le handler du endpoint de login (POST /login -> cookie + redirect to index)
 - Créer le guard d'authentification User + SiteAccess pour authentifier un User sur un SiteAccess via cookie.

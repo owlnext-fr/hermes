@@ -1,10 +1,12 @@
 pub mod bootstrap;
+pub mod cache;
 pub mod catcher;
 pub mod cipher;
 pub mod cli;
 pub mod commands;
 pub mod database;
 pub mod exit_codes;
+pub mod fairings;
 pub mod guards;
 pub mod macros;
 pub mod response;

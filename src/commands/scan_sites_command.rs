@@ -5,11 +5,12 @@ use rocket::{Build, Rocket};
 
 use crate::{
     core::{
+        cache::{self, CacheState},
         commands::{
             command_trait::{CommandArgs, CommandTrait},
             command_utils::ConsoleIO,
         },
-        database::{Connected, DatabaseState},
+        database::{self, DatabaseState},
     },
     middlewares::site_middleware::SiteMiddleware,
     model::site::{NewSiteDTO, Site},
@@ -41,8 +42,14 @@ impl<'a> CommandTrait<'a> for ScanSitesCommand {
         io: &ConsoleIO,
         _args: &CommandArgs,
     ) -> Result<()> {
-        let db_conn = rocket.state::<DatabaseState<Connected>>().unwrap();
-        let site_middleware = SiteMiddleware::new(db_conn.get_new_connection());
+        let db_conn = rocket
+            .state::<DatabaseState<database::Connected>>()
+            .unwrap();
+        let cache_conn = rocket.state::<CacheState<cache::Connected>>().unwrap();
+        let site_middleware = SiteMiddleware::new(
+            db_conn.get_new_connection(),
+            cache_conn.get_new_connection(),
+        );
 
         let nb_step = 10;
 

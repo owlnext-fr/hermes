@@ -1,14 +1,16 @@
 use anyhow::{bail, Result};
+use redis::{AsyncCommands, Client as RedisClient};
 use surrealdb::{engine::remote::ws::Client, Surreal};
 use thiserror::Error;
 
 use super::impls::model_middleware_trait::ModelMiddlewareTrait;
 use crate::model::{
     api_user::ApiUser,
-    impls::model_trait::ModelTrait,
     site::{NewSiteDTO, Site, SiteDetailsDTO, SiteDetailsFetchedDTO, SITE_TABLE},
 };
 use surrealdb::Error;
+
+const SITE_CACHE_KEY: &str = "app:sites";
 
 #[derive(Debug, Error)]
 pub enum SiteMiddlewareError {
@@ -21,13 +23,14 @@ pub enum SiteMiddlewareError {
 #[derive(Clone)]
 pub struct SiteMiddleware {
     pub db: Surreal<Client>,
+    pub cache: RedisClient,
 }
 
 impl ModelMiddlewareTrait for SiteMiddleware {}
 
 impl SiteMiddleware {
-    pub fn new(db: Surreal<Client>) -> Self {
-        Self { db }
+    pub fn new(db: Surreal<Client>, cache: RedisClient) -> Self {
+        Self { db, cache }
     }
 
     pub async fn create(&self, new_site: &NewSiteDTO, creator: Option<&ApiUser>) -> Result<Site> {
@@ -45,6 +48,8 @@ impl SiteMiddleware {
             bail!(SiteMiddlewareError::DatabaseError(error.to_string()));
         }
 
+        self.load_names_in_cache().await?;
+
         Ok(created?)
     }
 
@@ -59,6 +64,8 @@ impl SiteMiddleware {
         if let Err(error) = &deleted {
             bail!(SiteMiddlewareError::DatabaseError(error.to_string()));
         }
+
+        self.load_names_in_cache().await?;
 
         Ok(deleted?)
     }
@@ -128,5 +135,39 @@ impl SiteMiddleware {
         let user: Option<Site> = result?.take(0)?;
 
         Ok(user)
+    }
+
+    pub async fn load_names_in_cache(&self) -> Result<()> {
+        let sql = r#"
+            SELECT VALUE name
+            FROM site
+            WHERE is_deleted = false
+        "#;
+
+        let result = self.db.query(sql).await;
+
+        if let Err(error) = &result {
+            bail!(SiteMiddlewareError::DatabaseError(error.to_string()));
+        }
+
+        let site_names: Vec<String> = result?.take(0)?;
+
+        let mut conn = self.cache.get_async_connection().await?;
+
+        let _: () = conn
+            .set(SITE_CACHE_KEY, serde_json::to_string(&site_names)?)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn get_names_from_cache(&self) -> Result<Vec<String>> {
+        let mut conn = self.cache.get_async_connection().await?;
+
+        let sites: String = conn.get(SITE_CACHE_KEY).await?;
+
+        let sites: Vec<String> = serde_json::from_str(&sites)?;
+
+        Ok(sites)
     }
 }

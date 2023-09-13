@@ -3,7 +3,6 @@ use std::path::{Path, PathBuf};
 
 #[get("/<file..>")]
 pub async fn serve(file: PathBuf) -> Option<NamedFile> {
-    todo!();
     // site guessing by url
 
     let mut file = file;

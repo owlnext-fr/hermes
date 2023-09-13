@@ -1,8 +1,7 @@
 use rocket::{
     fs::NamedFile,
     get,
-    http::uri::{Authority, Host, Uri},
-    uri, State,
+    http::uri::{Authority, Host}, State,
 };
 use std::{
     env,
@@ -16,7 +15,6 @@ use crate::{
         guards::origin_host_guard::OriginHost,
     },
     middlewares::site_middleware::SiteMiddleware,
-    model::site,
 };
 
 #[get("/<file..>")]

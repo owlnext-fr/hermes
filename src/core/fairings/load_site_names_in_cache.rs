@@ -1,11 +1,11 @@
-use std::io::Cursor;
-use std::sync::atomic::{AtomicUsize, Ordering};
+
+
 
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::{ContentType, Method, Status};
-use rocket::{Data, Orbit, Request, Response, Rocket};
 
-use crate::core::cache::{self, CacheState, Connected};
+use rocket::{Orbit, Rocket};
+
+use crate::core::cache::{self, CacheState};
 use crate::core::database::{self, DatabaseState};
 use crate::middlewares::site_middleware::SiteMiddleware;
 
